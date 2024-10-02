@@ -1,0 +1,111 @@
+---
+title: "EDS 223: Week 1 Discussion Section"
+author: "Rachel Swick"
+format: html
+---
+## 1. Learning Objectives
+- Read in spatial objects
+- Create map with single spatial object
+- Create map with multiple spatial objects
+- Use different types of `tmap` plotting formats (e.g. `tm_polygons()`, `tm_fill()`, `tm_dots()`, etc.)
+- Adjust color palettes
+- Include essential map elements (e.g. scale bar & north arrow or graticules)
+- Create an interactive map
+- Bonus Challenge: Reproduce map using `ggplot2` instead of `tmap`
+
+## 2. Get Started
+- Open your forked version of this repository and navigate to your version controlled project for Week 1
+- Create a Quarto document
+- Load all necessary packages
+- Read in the spatial objects for Easter Island (Rapa Nui/Isla de Pascua):
+  - `ei_points`: file contains several points on the island
+  - `ei_elev`: raster with elevation data
+  - `ei_borders`: polygon with the island outline
+  - `ei_roads`: lines contains a road network for the island
+  
+```{r}
+# load libraries
+library(here)
+library(tidyverse)
+library(stars)
+library(sf)
+library(tmap)
+```
+ 
+```{r}
+# read in the spatial objects for Easter Island
+ei_points <- sf::read_sf(here::here("data", "easter_island", "ei_points.gpkg"))
+volcanoes <- subset(ei_points, type == "volcano")
+ei_elev <- stars::read_stars(here::here("data", "easter_island", "ei_elev.tif"))
+ei_borders <- sf::read_sf(here::here("data", "easter_island", "ei_border.gpkg"))
+ei_roads <- sf::read_sf(here::here("data", "easter_island", "ei_roads.gpkg"))
+```
+  
+## 3. Your Task
+
+1. Create a map of Easter Island
+```{r}
+tm_shape(ei_borders) +
+  tm_polygons(col = "lightgreen",
+              borders.col = "black",
+              lwd = 3) +
+  tm_layout(main.title = "Map of Easter Island",
+            frame = FALSE)
+```
+
+2. Create a map of Easter Island and…
+    …denote the island’s borders and continuous elevation
+    …denote the island’s volcanoes and roads
+    …play with the color palette and essential map elements
+```{r}
+tm_shape(ei_elev) +
+  tm_raster(palette = c("tan", "brown"),
+            title = "Elevation (feet)") +
+tm_shape(ei_borders) +
+  tm_borders() +
+tm_shape(volcanoes) +
+  tm_dots(size = 0.2,
+          col = "orange") +
+tm_shape(ei_roads) +
+  tm_lines() +
+tm_layout(frame = FALSE,
+          title = "Map of Volcanoes on Easter Island")+
+  tm_scale_bar() +
+  tm_compass(position = c("left", "bottom"))
+```
+
+3. Create an interactive map of Easter Island  
+```{r}
+tmap_mode("view")
+
+tm_shape(ei_elev) +
+  tm_raster(palette = c("tan", "brown"),
+            title = "Elevation (feet)") +
+tm_shape(ei_borders) +
+  tm_borders() +
+tm_shape(volcanoes) +
+  tm_dots(size = 0.2,
+          col = "orange") +
+tm_shape(ei_roads) +
+  tm_lines() +
+tm_layout(frame = FALSE,
+          title = "Map of Volcanoes on Easter Island")+
+  tm_scale_bar() +
+  tm_compass(position = c("left", "bottom"))
+```
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
